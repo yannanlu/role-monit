@@ -15,5 +15,6 @@ monit_os_release_file: "{{ '/etc/redhat-release' if ansible_distribution in ['Re
 monit_allow_list:
   - 10.0.0.0/8
   - 170.140.0.0/16
-  - 75.131.197.0/24
   - localhost
+
+monit_extra_allow_list: []

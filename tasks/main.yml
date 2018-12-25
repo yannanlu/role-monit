@@ -5,6 +5,21 @@
     state: present
     update_cache: yes
 
+- name: Open the port
+  iptables:
+    chain: INPUT
+    destination_port: "{{monit_port}}"
+    action: insert
+    jump: ACCEPT
+    protocol: tcp
+    state: present
+  register: port_2812_result
+  when: common_iptables != 'disabled'
+
+- name: Save iptables
+  command: "/sbin/iptables-save"
+  when: port_2812_result is changed
+
 - name: Copy pemfile
   copy:
     src: "{{monit_pemfile}}"
@@ -30,5 +45,8 @@
     idfile: "{{monit_idfile}}"
     statefile: "{{monit_statefile}}"
     pemfile: "{{monit_includedir}}/{{monit_pemfile}}"
+    user: "{{monit_user}}"
+    passwd: "{{monit_passwd|replace('\n', '')}}"
+    allow_list: "{{monit_allow_list}} + {{monit_extra_allow_list}}"
     includedir: "{{monit_includedir}}"
   notify: Restart_monit.service

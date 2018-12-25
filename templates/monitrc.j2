@@ -12,8 +12,8 @@ set httpd
     port {{ monit_port }}
     ssl enable
     pemfile {{ pemfile }}
-    allow {{ monit_user }}:{{ monit_passwd }}
-{% for item in monit_allow_list %}
+    allow {{ user }}:{{ passwd }}
+{% for item in allow_list %}
     allow {{ item }}
 {% endfor %}
 
