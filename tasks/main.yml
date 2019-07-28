@@ -27,6 +27,14 @@
     mode: 0600
   notify: Restart_monit.service
 
+- name: Copy pamfile
+  copy:
+    src: monit.pam
+    dest: /etc/pam.d/monit
+    mode: 0644
+  when: ansible_distribution == 'RedHat'
+  notify: Restart_monit.service
+
 - name: Template of os_release.monit.j2
   template:
     src: os_release.monit.j2
