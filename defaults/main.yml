@@ -2,10 +2,11 @@
 monit_port: 2812
 monit_user: monit
 monit_passwd: monit
-monit_pemfile: monit.pem
+monit_pemfile: ''
+monit_key_secret: xxxx
 monit_pkg_name: monit
 
-monit_pkg_version: "{{ '5.14-1.el7' if ansible_distribution in ['RedHat','CentOS'] else '1:5.16-2' }}"
+monit_pkg_version: "{{ '5.25.1-1.el7' if ansible_distribution in ['RedHat','CentOS'] else '1:5.16-2' }}"
 monit_dir: "{{ '/etc' if ansible_distribution in ['RedHat','CentOS'] else '/etc/monit' }}"
 monit_includedir: "{{ '/etc/monit.d' if ansible_distribution in ['RedHat','CentOS'] else '/etc/monit/conf.d' }}"
 monit_idfile: "{{ '/var/.monit.id' if ansible_distribution in ['RedHat','CentOS'] else '/var/lib/monit/id' }}"
@@ -14,7 +15,7 @@ monit_os_release_file: "{{ '/etc/redhat-release' if ansible_distribution in ['Re
 
 monit_allow_list:
   - 10.0.0.0/8
-  - 170.140.0.0/16
+  - 192.168.1.0/24
   - localhost
 
 monit_extra_allow_list: []

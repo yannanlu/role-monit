@@ -11,28 +11,32 @@
     destination_port: "{{monit_port}}"
     action: insert
     jump: ACCEPT
+    match: state
+    ctstate: NEW
     protocol: tcp
     state: present
   register: port_2812_result
   when: common_iptables != 'disabled'
 
 - name: Save iptables
-  command: "/sbin/iptables-save"
+  shell: "/sbin/iptables-save > /etc/sysconfig/iptables" 
   when: port_2812_result is changed
 
-- name: Copy pemfile
+- name: Copy server.pem
   copy:
-    src: "{{monit_pemfile}}"
+    src: server.pem
     dest: "{{monit_includedir}}/"
     mode: 0600
   notify: Restart_monit.service
 
-- name: Copy pamfile
-  copy:
-    src: monit.pam
-    dest: /etc/pam.d/monit
-    mode: 0644
-  when: ansible_distribution == 'RedHat'
+- name: Template of pemfile
+  template:
+    src: "{{monit_pemfile}}.j2"
+    dest: "{{monit_includedir}}/{{monit_pemfile|basename}}"
+    mode: 0600
+  vars:
+    key_secret: "{{monit_key_secret|replace('\n', '')}}"
+  when: monit_pemfile|length > 0
   notify: Restart_monit.service
 
 - name: Template of os_release.monit.j2
@@ -52,7 +56,7 @@
   vars:
     idfile: "{{monit_idfile}}"
     statefile: "{{monit_statefile}}"
-    pemfile: "{{monit_includedir}}/{{monit_pemfile}}"
+    pemfile: "{{monit_includedir}}/{{monit_pemfile|basename|default('server.pem', true)}}"
     user: "{{monit_user}}"
     passwd: "{{monit_passwd|replace('\n', '')}}"
     allow_list: "{{monit_allow_list}} + {{monit_extra_allow_list}}"
